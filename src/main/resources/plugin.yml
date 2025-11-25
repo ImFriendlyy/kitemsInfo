@@ -1,0 +1,13 @@
+name: kItemsInfo
+version: '1.0'
+main: vv0ta3fa9.plugin.kItemsInfo.KItemsInfo
+api-version: '1.16'
+load: STARTUP
+authors: [ vv0t3afa9 ]
+website: t.me/kapybarkaaa
+
+commands:
+  kitemsinfo:
+    description: Команда для работы с информацией о предметах
+    usage: /kitemsinfo <info|setmodeldata>
+    aliases: [kii, iteminfo]
