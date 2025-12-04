@@ -25,62 +25,62 @@ public class CommandManager implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+        ItemStack item = player.getInventory().getItemInMainHand();
 
         if (args.length == 0) {
-            send(sender, "&cИспользование: /kitemsinfo info <all|modeldata>");
-            send(sender, "&cИспользование: /kitemsinfo setmodeldata <число>");
+            showAllNBT(player, item);
             return true;
         }
 
         String subcommand = args[0].toLowerCase();
 
-        if (subcommand.equals("info")) {
-            if (args.length < 2) {
-                send(sender, "&cИспользование: /kitemsinfo info <all|modeldata>");
+        switch (subcommand) {
+            case "help":
+                send(sender, "&cИнформация о предмете в руках: /kitemsinfo info <all|modeldata>");
+                send(sender, "&cУстановить модельдату: /kitemsinfo setmodeldata <число>");
                 return true;
-            }
+            case "info":
+                if (args.length < 2) {
+                    send(sender, "&cИспользование: /kitemsinfo info <all|modeldata>");
+                    return true;
+                }
 
-            ItemStack item = player.getInventory().getItemInMainHand();
-            if (item == null || item.getType() == Material.AIR) {
-                send(sender, "&cВы должны держать предмет в руке!");
+                if (item == null || item.getType() == Material.AIR) {
+                    send(sender, "&cВы должны держать предмет в руке!");
+                    return true;
+                }
+
+                String infoType = args[1].toLowerCase();
+                if (infoType.equals("all")) {
+                    showAllNBT(player, item);
+                } else if (infoType.equals("modeldata")) {
+                    showModelData(player, item);
+                } else {
+                    send(sender, "&cНеизвестный тип. Используйте: all или modeldata");
+                }
                 return true;
-            }
+            case "setmodeldata":
+                if (args.length < 2) {
+                    send(sender, "&cИспользование: /kitemsinfo setmodeldata <число>");
+                    return true;
+                }
 
-            String infoType = args[1].toLowerCase();
-            if (infoType.equals("all")) {
-                showAllNBT(player, item);
-            } else if (infoType.equals("modeldata")) {
-                showModelData(player, item);
-            } else {
-                send(sender, "&cНеизвестный тип информации. Используйте: all или modeldata");
-            }
-            return true;
+
+                if (item == null || item.getType() == Material.AIR) {
+                    send(sender, "&cВы должны держать предмет в руке!");
+                    return true;
+                }
+
+                try {
+                    int modelData = Integer.parseInt(args[1]);
+                    setModelData(item, modelData);
+                    player.getInventory().setItemInMainHand(item);
+                    send(sender, "&aModelData установлен: &e" + modelData);
+                } catch (NumberFormatException e) {
+                    send(sender, "&cОшибка: &e" + args[1] + " &cне является числом!");
+                }
+                return true;
         }
-
-        if (subcommand.equals("setmodeldata")) {
-            if (args.length < 2) {
-                send(sender, "&cИспользование: /kitemsinfo setmodeldata <число>");
-                return true;
-            }
-
-            ItemStack item = player.getInventory().getItemInMainHand();
-            if (item == null || item.getType() == Material.AIR) {
-                send(sender, "&cВы должны держать предмет в руке!");
-                return true;
-            }
-
-            try {
-                int modelData = Integer.parseInt(args[1]);
-                setModelData(item, modelData);
-                player.getInventory().setItemInMainHand(item);
-                send(sender, "&aModelData установлен: &e" + modelData);
-            } catch (NumberFormatException e) {
-                send(sender, "&cОшибка: &e" + args[1] + " &cне является числом!");
-            }
-            return true;
-        }
-
-        send(sender, "&cНеизвестная подкоманда. Используйте: info или setmodeldata");
         return true;
     }
 
